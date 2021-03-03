@@ -10,7 +10,7 @@
 #include <WiFiAP.h>
 #endif
 
-#define COM_BAUD 230400
+#define COM_BAUD 921600
 
 class GCS
 {
@@ -231,7 +231,7 @@ public:
 
 	void Send_Data(const float ekf_states[22],const float A[3], const float G[3], const float M[3],const float AHRS[5],const double gps_lat, const double gps_lon, const float hMSL, const float VelNED[3], const float hAcc, const float vAcc, const float sAcc, const uint8_t fixType, const float alt, const float airspeed, const float flowData[7],const float RngFinderDist, const long max_time)
 	{
-		if(millis() - transmit_ins_state > 20)
+		if(millis() - transmit_ins_state > 10)
 		{
 			transmit_ins_state = millis();
 
@@ -249,7 +249,7 @@ public:
 			}
 			ins_states.max_time = uint16_t(max_time);
 			ins_states.UID[0] = 0x00;
-			ins_states.UID[1] = int8_t(airspeed);
+			ins_states.UID[1] = 0x01;
 
 			write_To_Port(START_SIGN,2);
 			write_To_Port(STATE_ID,2);
@@ -259,7 +259,7 @@ public:
 			}
 			return; // return so that we don't send both sensor data and state data in the same go
 		}
-		if(millis() - transmit_sensor_data > 20 and millis()-transmit_ins_state>=10 and millis()-transmit_ins_state<=11) 
+		if(millis() - transmit_sensor_data > 10 and millis()-transmit_ins_state>=3 and millis()-transmit_ins_state<=7) 
 		{
 			transmit_sensor_data = millis();
 			
@@ -288,7 +288,7 @@ public:
 			
 			for(int i=0;i<4;i++)
 			{
-				sensor_states.OPFlow[i] = int8_t(flowData[i]);
+				sensor_states.OPFlow[i] = int8_t(100*flowData[i]);
 			}
 
 			write_To_Port(START_SIGN,2);
