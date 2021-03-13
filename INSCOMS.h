@@ -17,6 +17,7 @@ class GCS
 public:
 	ins_data_struct ins_states;
 	sensor_data_struct sensor_states;
+	external_data_struct external_inputs;
 	int16_t msg_len;
 	uint8_t mode;
 	long transmit_stamp, transmit_ins_state, transmit_sensor_data, received_stamp,failsafe_stamp;
@@ -301,12 +302,19 @@ public:
 		}
 	}
 
+	void get_velpos()
+	{
+		for(int i=0;i<16;i++)
+		{
+			((char *)(&external_inputs))[i] = Serial1.read();
+		}
+	}
 
 	uint16_t check()
 	{
 		uint16_t START_ID,message_ID;
 
-		if(millis() - received_stamp > 10 or Serial1.available()>=6) //10 Hz 
+		if(millis() - received_stamp > 10 or Serial1.available()>=6) //100 Hz 
 		{
 			received_stamp = millis();
 			if(Serial1.available())
