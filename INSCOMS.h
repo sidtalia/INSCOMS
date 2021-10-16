@@ -310,6 +310,20 @@ public:
 		}
 	}
 
+	void get_fconfig()
+	{
+		// if message_ID is F_CONFIG i
+		int16_t param_add = Serial1.read()|int16_t(Serial1.read()<<8); // parameter address (not ID)
+		int16_t data_type = Serial1.read()|int16_t(Serial1.read()<<8); // parameter data type equivalent size (2 for int, 4 for float)
+		for(int i = 0; i < data_type; i++)
+		{
+			char c = Serial1.read();
+			((char *)(&f_conf))[param_add + i] = c;
+			EEPROM.write(100 + param_add + i, c);
+			EEPROM.commit();
+		}
+	}
+
 	uint16_t check()
 	{
 		uint16_t START_ID,message_ID;
